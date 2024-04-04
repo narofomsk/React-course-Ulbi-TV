@@ -8,7 +8,7 @@ function App() {
 		{ title: 'JavaScript', body: 'Desc', id: 1 },
 		{ title: 'Python', body: 'Desc', id: 2 },
 		{ title: 'C++', body: 'Desc', id: 3 },
-		{ title: 'Java', body: 'Desc', id: 4 },
+		{ title: 'Javd', body: 'Desc', id: 4 },
 	])
 
 	const [selectedSort, SetSelectedSort] = useState('')

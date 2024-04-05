@@ -2,32 +2,33 @@ import React, { useMemo, useState } from 'react'
 import './App.css'
 import FormPost from './Components/FormPost.jsx'
 import PostList from './Components/PostList.jsx'
+import PostFilter from "./Components/PostFIlter.jsx";
 
 function App() {
 	const [posts, setPosts] = useState([
 		{ title: 'JavaScript', body: 'Desc', id: 1 },
 		{ title: 'Python', body: 'Desc', id: 2 },
 		{ title: 'C++', body: 'Desc', id: 3 },
-		{ title: 'Javd', body: 'Desc', id: 4 },
+		{ title: 'Java', body: 'Desc', id: 4 },
 	])
 
-	const [selectedSort, SetSelectedSort] = useState('')
-	const [searchQuery, setSearchQuery] = useState('')
+	const [filter, setFilter] = useState({sort: '', query: ''})
 
-	const sortedPosts = useMemo(() => {
-		if (selectedSort) {
+	const sortedPosts = useMemo(
+		() => {
+		if (filter.sort) {
 			return [...posts].sort((a, b) =>
-				a[selectedSort].localeCompare(b[selectedSort])
+				a[filter.sort].localeCompare(b[filter.sort])
 			)
 		}
 		return posts
-	}, [selectedSort, posts])
+	}, [filter.sort, posts])
 
 	const sortedAndSearchPosts = useMemo(() => {
 		return sortedPosts.filter(post =>
-			post.title.toLowerCase().includes(searchQuery)
+			post.title.toLowerCase().includes(filter.query)
 		)
-	}, [sortedPosts, searchQuery])
+	}, [filter.sort, sortedPosts])
 
 	const createPost = newPost => {
 		setPosts([...posts, newPost])
@@ -41,14 +42,14 @@ function App() {
 		<>
 			<div>
 				<FormPost create={createPost} />
-				{sortedAndSearchPosts.length === 0
-					? (<h1>Список пуст</h1>)
-					: (<PostList
-						remove={removePost}
-						title='Список постов'
-						posts={sortedAndSearchPosts}
-						/>
-					)}
+				<hr/>
+				<PostFilter filter={filter} setFilter={setFilter}/>
+				<PostList
+					remove={removePost}
+					title='Список постов'
+					posts={sortedAndSearchPosts}
+				/>
+
 			</div>
 		</>
 	)

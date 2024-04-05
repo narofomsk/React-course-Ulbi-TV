@@ -1,0 +1,10 @@
+.Post {
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #646cff;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}

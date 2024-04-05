@@ -3,6 +3,8 @@ import './App.css'
 import FormPost from './Components/FormPost.jsx'
 import PostList from './Components/PostList.jsx'
 import PostFilter from "./Components/PostFIlter.jsx";
+import MyModal from "./Components/Ul/MyModal/MyModal.jsx";
+import {usePosts} from "./hooks/usePosts.js";
 
 function App() {
 	const [posts, setPosts] = useState([
@@ -13,25 +15,12 @@ function App() {
 	])
 
 	const [filter, setFilter] = useState({sort: '', query: ''})
-
-	const sortedPosts = useMemo(
-		() => {
-		if (filter.sort) {
-			return [...posts].sort((a, b) =>
-				a[filter.sort].localeCompare(b[filter.sort])
-			)
-		}
-		return posts
-	}, [filter.sort, posts])
-
-	const sortedAndSearchPosts = useMemo(() => {
-		return sortedPosts.filter(post =>
-			post.title.toLowerCase().includes(filter.query)
-		)
-	}, [filter.sort, sortedPosts])
+	const [modal, setModal] = useState(false)
+	const sortedAndSearchPosts = usePosts(posts, filter.sort, filter.query)
 
 	const createPost = newPost => {
 		setPosts([...posts, newPost])
+		setModal(false)
 	}
 
 	const removePost = post => {
@@ -40,8 +29,10 @@ function App() {
 
 	return (
 		<>
-			<div>
-				<FormPost create={createPost} />
+				<button onClick={() => setModal(true)}>Создать пользователя</button>
+				<MyModal visible={modal} setVisible={setModal}>
+					<FormPost create={createPost} />
+				</MyModal>
 				<hr/>
 				<PostFilter filter={filter} setFilter={setFilter}/>
 				<PostList
@@ -50,7 +41,6 @@ function App() {
 					posts={sortedAndSearchPosts}
 				/>
 
-			</div>
 		</>
 	)
 }

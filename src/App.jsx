@@ -7,13 +7,17 @@ import PostList from './Components/PostList.jsx'
 import Loader from './Components/Ul/Loader/Loader.jsx'
 import MyModal from './Components/Ul/MyModal/MyModal.jsx'
 import { usePosts } from './hooks/usePosts.js'
+import {useFetching} from "./API/useFetching.js";
 
 function App() {
 	const [posts, setPosts] = useState([])
 	const [filter, setFilter] = useState({ sort: '', query: '' })
 	const [modal, setModal] = useState(false)
 	const sortedAndSearchPosts = usePosts(posts, filter.sort, filter.query)
-	const [isPostsLoading, setIsPostsLoading] = useState(false)
+	const [fetchPosts, isPostsLoading, postError] = useFetching( async () => {
+		const posts = await PostsService.getAll()
+		setPosts(posts)
+	})
 
 	useEffect(() => {
 		fetchPosts()
@@ -24,26 +28,23 @@ function App() {
 		setModal(false)
 	}
 
-	async function fetchPosts() {
-		setIsPostsLoading(true)
-		const posts = await PostsService.getAll()
-		setPosts(posts)
-		setIsPostsLoading(false)
-	}
-
 	const removePost = post => {
 		setPosts(posts.filter(p => p.id !== post.id))
 	}
 
+	const removePostAll = () => {
+		setPosts([])
+	}
+
 	return (
 		<>
-			<button onClick={fetchPosts}>get posts</button>
 			<button onClick={() => setModal(true)}>Создать пользователя</button>
 			<MyModal visible={modal} setVisible={setModal}>
 				<FormPost create={createPost} />
 			</MyModal>
 			<hr />
 			<PostFilter filter={filter} setFilter={setFilter} />
+			{}
 			{isPostsLoading ? (
 				<div style={{ textAlign: 'center', marginTop: '50px' }}>
 					<Loader />
@@ -52,6 +53,7 @@ function App() {
 				<PostList
 					isLoading={isPostsLoading}
 					remove={removePost}
+					removeAll={removePostAll}
 					title='Список постов'
 					posts={sortedAndSearchPosts}
 				/>

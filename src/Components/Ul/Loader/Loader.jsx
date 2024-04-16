@@ -3,6 +3,6 @@ import classes from './Loader.module.css'
 
 export default function Loader() {
   return (
-	<span class={classes.loader}></span>
+	<span className={classes.loader}></span>
   )
 }

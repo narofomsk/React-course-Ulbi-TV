@@ -8,15 +8,23 @@ import Loader from './Components/Ul/Loader/Loader.jsx'
 import MyModal from './Components/Ul/MyModal/MyModal.jsx'
 import { usePosts } from './hooks/usePosts.js'
 import {useFetching} from "./API/useFetching.js";
+import {getPageCount} from "./utils/pages.js";
+import {usePagination} from "./hooks/usePagination.js";
 
 function App() {
 	const [posts, setPosts] = useState([])
 	const [filter, setFilter] = useState({ sort: '', query: '' })
 	const [modal, setModal] = useState(false)
+	const [totalPages, setTotalPages] = useState(0)
+	const [limit, setLimit] = useState(10)
+	const [page, setPage] = useState(1)
 	const sortedAndSearchPosts = usePosts(posts, filter.sort, filter.query)
+	let pagesArray = usePagination(totalPages, page)
 	const [fetchPosts, isPostsLoading, postError] = useFetching( async () => {
-		const posts = await PostsService.getAll()
-		setPosts(posts)
+		const response = await PostsService.getAll(limit, page)
+		setPosts(response.data)
+		const totalCount = response.headers['x-total-count']
+		setTotalPages(getPageCount(totalCount, limit))
 	})
 
 	useEffect(() => {
@@ -58,6 +66,9 @@ function App() {
 					posts={sortedAndSearchPosts}
 				/>
 			)}
+			<div>
+				{pagesArray.map(p => <button>{p}</button>)}
+			</div>
 		</>
 	)
 }

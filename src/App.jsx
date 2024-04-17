@@ -9,7 +9,7 @@ import MyModal from './Components/Ul/MyModal/MyModal.jsx'
 import { usePosts } from './hooks/usePosts.js'
 import {useFetching} from "./API/useFetching.js";
 import {getPageCount} from "./utils/pages.js";
-import {usePagination} from "./hooks/usePagination.js";
+import Pagination from "./Components/Ul/pagination/Pagination.jsx";
 
 function App() {
 	const [posts, setPosts] = useState([])
@@ -19,8 +19,7 @@ function App() {
 	const [limit, setLimit] = useState(10)
 	const [page, setPage] = useState(1)
 	const sortedAndSearchPosts = usePosts(posts, filter.sort, filter.query)
-	let pagesArray = usePagination(totalPages, page)
-	const [fetchPosts, isPostsLoading, postError] = useFetching( async () => {
+	const [fetchPosts, isPostsLoading, postError] = useFetching( async (limit, page) => {
 		const response = await PostsService.getAll(limit, page)
 		setPosts(response.data)
 		const totalCount = response.headers['x-total-count']
@@ -28,7 +27,7 @@ function App() {
 	})
 
 	useEffect(() => {
-		fetchPosts()
+		fetchPosts(limit, page)
 	}, [])
 
 	const createPost = newPost => {
@@ -42,6 +41,11 @@ function App() {
 
 	const removePostAll = () => {
 		setPosts([])
+	}
+
+	const changePage = (page) => {
+		setPage(page)
+		fetchPosts(limit, page)
 	}
 
 	return (
@@ -66,9 +70,11 @@ function App() {
 					posts={sortedAndSearchPosts}
 				/>
 			)}
-			<div>
-				{pagesArray.map(p => <button>{p}</button>)}
-			</div>
+			<Pagination
+				totalPages={totalPages}
+				page={page}
+				changePage={changePage}
+			/>
 		</>
 	)
 }

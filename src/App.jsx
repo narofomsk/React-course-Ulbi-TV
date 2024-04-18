@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import PostsService from './API/PostService.js'
+import { useFetching } from './API/useFetching.js'
 import './App.css'
 import FormPost from './Components/FormPost.jsx'
 import PostFilter from './Components/PostFilter.jsx'
 import PostList from './Components/PostList.jsx'
 import Loader from './Components/Ul/Loader/Loader.jsx'
 import MyModal from './Components/Ul/MyModal/MyModal.jsx'
+import Pagination from './Components/Ul/pagination/Pagination.jsx'
 import { usePosts } from './hooks/usePosts.js'
-import {useFetching} from "./API/useFetching.js";
-import {getPageCount} from "./utils/pages.js";
-import Pagination from "./Components/Ul/pagination/Pagination.jsx";
+import { getPageCount } from './utils/pages.js'
 
 function App() {
 	const [posts, setPosts] = useState([])
@@ -19,12 +19,14 @@ function App() {
 	const [limit, setLimit] = useState(10)
 	const [page, setPage] = useState(1)
 	const sortedAndSearchPosts = usePosts(posts, filter.sort, filter.query)
-	const [fetchPosts, isPostsLoading, postError] = useFetching( async (limit, page) => {
-		const response = await PostsService.getAll(limit, page)
-		setPosts(response.data)
-		const totalCount = response.headers['x-total-count']
-		setTotalPages(getPageCount(totalCount, limit))
-	})
+	const [fetchPosts, isPostsLoading, postError] = useFetching(
+		async (limit, page) => {
+			const response = await PostsService.getAll(limit, page)
+			setPosts(response.data)
+			const totalCount = response.headers['x-total-count']
+			setTotalPages(getPageCount(totalCount, limit))
+		}
+	)
 
 	useEffect(() => {
 		fetchPosts(limit, page)
@@ -38,12 +40,12 @@ function App() {
 	const removePost = post => {
 		setPosts(posts.filter(p => p.id !== post.id))
 	}
-
+	
 	const removePostAll = () => {
 		setPosts([])
 	}
 
-	const changePage = (page) => {
+	const changePage = page => {
 		setPage(page)
 		fetchPosts(limit, page)
 	}
@@ -56,25 +58,26 @@ function App() {
 			</MyModal>
 			<hr />
 			<PostFilter filter={filter} setFilter={setFilter} />
-			{}
 			{isPostsLoading ? (
 				<div style={{ textAlign: 'center', marginTop: '50px' }}>
 					<Loader />
 				</div>
 			) : (
-				<PostList
-					isLoading={isPostsLoading}
-					remove={removePost}
-					removeAll={removePostAll}
-					title='Список постов'
-					posts={sortedAndSearchPosts}
-				/>
+				<div>
+					<PostList
+						isLoading={isPostsLoading}
+						remove={removePost}
+						removeAll={removePostAll}
+						title='Список постов'
+						posts={sortedAndSearchPosts}
+					/>
+					<Pagination
+						totalPages={totalPages}
+						page={page}
+						changePage={changePage}
+					/>
+				</div>
 			)}
-			<Pagination
-				totalPages={totalPages}
-				page={page}
-				changePage={changePage}
-			/>
 		</>
 	)
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import PostItem from "./Ul/Post/PostItem.jsx";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 
-const PostList = ({posts, title, remove, isLoading, removeAll}) => {
+const PostList = ({posts, title, remove, isLoading }) => {
     if (!posts.length) {
         return <h1 style={{textAlign: 'center'}}>Посты не найдены</h1>
     }
@@ -10,7 +10,6 @@ const PostList = ({posts, title, remove, isLoading, removeAll}) => {
     return (
         <div style={{textAlign: 'center'}}>
             <h1>{title}</h1>
-            <button style={{marginBottom: '30px'}} onClick={removeAll}>DELETE ALL</button>
             <TransitionGroup>
                 {posts.map((post, index) =>
                     <CSSTransition

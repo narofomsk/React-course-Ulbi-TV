@@ -10,5 +10,3 @@ export const usePagination = (totalPages) => {
     }, [totalPages]);
     return pagesArray
 }
-
-const ass = 1

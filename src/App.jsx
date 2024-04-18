@@ -40,10 +40,6 @@ function App() {
 	const removePost = post => {
 		setPosts(posts.filter(p => p.id !== post.id))
 	}
-	
-	const removePostAll = () => {
-		setPosts([])
-	}
 
 	const changePage = page => {
 		setPage(page)
@@ -67,7 +63,6 @@ function App() {
 					<PostList
 						isLoading={isPostsLoading}
 						remove={removePost}
-						removeAll={removePostAll}
 						title='Список постов'
 						posts={sortedAndSearchPosts}
 					/>
